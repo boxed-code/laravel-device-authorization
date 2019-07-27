@@ -93,7 +93,15 @@ trait DeviceAuthorization
                 return redirect()->to('/');
 
             case AuthBroker::INVALID_FINGERPRINT:
-                return $this->sendErrorResponse('This device or browser does not match that of the authorization request.');
+                return $this->sendErrorResponse(
+                    'This device or browser does not match that of the authorization request.'
+                );
+
+            case AuthBroker::EXPIRED_REQUEST:
+                return $this->sendErrorResponse(
+                    'This authorization request has expired.'
+                );
+
         }
 
         throw new DeviceAuthorizationLogicException;

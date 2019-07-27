@@ -3,9 +3,8 @@
 namespace BoxedCode\Laravel\Auth\Device;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager as ManagerContract;
-use BoxedCode\Laravel\Auth\Device\Contracts\FingerprintManager as Fingerprint;
+use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter;
 use Illuminate\Contracts\Encryption\Encrypter;
-use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Http\Request;
@@ -21,16 +20,11 @@ class AuthManager implements ManagerContract
 
     protected $encrypter;
 
-    protected $hasher;
-
-    public function __construct(Hasher $hasher, 
-                                Encrypter $encrypter, 
+    public function __construct(Encrypter $encrypter, 
                                 Session $session, 
-                                Fingerprint $fingerprinter, 
+                                Fingerprinter $fingerprinter, 
                                 array $config = []
     ) {
-        $this->hasher = $hasher;
-
         $this->encrypter = $encrypter;
 
         $this->session = $session;
@@ -61,8 +55,14 @@ class AuthManager implements ManagerContract
     {
         $enrypted = $this->encrypter->encrypt($token);
 
+        $lifetime = $this->config['lifetimes']['authorization'] ?: 2628000;
+
         $response->headers->setCookie(
-            (new CookieJar)->make('_la_dat', $enrypted, 60 * 24 * 365)
+            (new CookieJar)->make(
+                '_la_dat', 
+                $enrypted, 
+                $lifetime
+            )
         );
 
         return $response;
@@ -75,6 +75,16 @@ class AuthManager implements ManagerContract
         }
     }
 
+    public function setClientFingerprint(Request $request, $fingerprint)
+    {
+        $request->session()->put('client_fingerprint', $fingerprint);
+    }
+
+    public function forgetClientFingerprint(Request $request)
+    {
+        $request->session()->forget('client_fingerprint');
+    }
+
     public function isAuthorized(Request $request)
     {
         $token = $this->getDeviceTokenCookie($request);
@@ -82,10 +92,13 @@ class AuthManager implements ManagerContract
         $fingerprint = $this->fingerprint($request);
 
         if ($authorization = $request->user()->devices()->find($token)) {
-            return $this->hasher->check(
-                $fingerprint, 
-                $authorization->fingerprint
+            $algorithm = $this->config['fingerprints']['algorithm'];
+
+            $fingerprintMatch = (
+                hash($algorithm, $fingerprint) === $authorization->fingerprint
             );
+
+            return $authorization->verified_at && $fingerprintMatch;
         }
 
         return false;

@@ -4,9 +4,9 @@ namespace BoxedCode\Laravel\Auth\Device;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker as BrokerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager as ManagerContract;
-use BoxedCode\Laravel\Auth\Device\Contracts\FingerprintManager as FingerprintsContract;
-use BoxedCode\Laravel\Auth\Device\Fingerprints\FingerprintManager;
-use Illuminate\Contracts\Hashing\Hasher;
+use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter as FingerprinterContract;
+use BoxedCode\Laravel\Auth\Device\Fingerprints\Fingerprinter;
+use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -25,9 +25,25 @@ class DeviceAuthServiceProvider extends ServiceProvider
             'device'
         );
 
+        $this->registerFingerPrinter();
+
         $this->registerAuthBroker();
 
         $this->registerAuthManager();
+    }
+
+    /**
+     * Register the fingerprint manager.
+     * 
+     * @return void
+     */
+    public function registerFingerPrinter()
+    {
+        $this->app->bind(FingerprinterContract::class, function() {
+            $config = config('device.fingerprints', []);
+
+            return new Fingerprinter($config);
+        });
     }
 
     /**
@@ -40,31 +56,27 @@ class DeviceAuthServiceProvider extends ServiceProvider
         $this->app->bind(BrokerContract::class, function($app) {
             $config = config('device', []);
 
-            $hasher = $app->make(Hasher::class);
-
-            return (new AuthBroker($hasher, $config))
+            return (new AuthBroker($config))
                 ->setEventDispatcher($app['events']);
         });
 
         $this->app->alias(BrokerContract::class, 'auth.device.broker');
     }
 
+    /**
+     * Register the authentication manager.
+     * 
+     * @return void
+     */
     protected function registerAuthManager()
     {
-        $this->app->bind(FingerprintsContract::class, function() {
-            return new FingerprintManager($this->app);
-        });
-
         $this->app->singleton(ManagerContract::class, function($app) {
             $config = config('device', []);
 
-            $hasher = $app->make(Hasher::class);
-
             return new AuthManager(
-                $hasher,
-                $this->app['encrypter'],
-                $this->app->make(Session::class),
-                $this->app->make(FingerprintsContract::class),
+                $app->make(Encrypter::class),
+                $app->make(Session::class),
+                $app->make(FingerprinterContract::class),
                 $config
             );
         });
@@ -95,6 +107,17 @@ class DeviceAuthServiceProvider extends ServiceProvider
         $this->publishes(
             [$this->packagePath('migrations') => database_path('migrations')], 
             'migrations'
+        );
+
+        // Register the event listeners.
+        $this->app['events']->listen(
+            \Illuminate\Auth\Events\Logout::class, 
+            \BoxedCode\Laravel\Auth\Device\Listeners\LogoutListener::class
+        );
+
+        $this->app['events']->listen(
+            \Illuminate\Auth\Events\Login::class, 
+            \BoxedCode\Laravel\Auth\Device\Listeners\LoginListener::class
         );
     }
 

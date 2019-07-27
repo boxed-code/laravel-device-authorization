@@ -6,7 +6,6 @@ use BoxedCode\Laravel\Auth\Device\AuthBrokerResponse;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker as BrokerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
-use Illuminate\Contracts\Hashing\Hasher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -16,12 +15,8 @@ class AuthBroker implements BrokerContract
 
     protected $dispatcher;
 
-    protected $hasher;
-
-    public function __construct(Hasher $hasher, array $config = [])
+    public function __construct(array $config = [])
     {
-        $this->hasher = $hasher;
-
         $this->config = $config;
     }
 
@@ -30,7 +25,9 @@ class AuthBroker implements BrokerContract
         // Flush all other pending authorizations for this user.
         $user->devices()->pending()->delete();
 
-        $fingerprintHash = $this->hasher->make($fingerprint);
+        $algorithm = $this->config['fingerprints']['algorithm'];
+
+        $fingerprintHash = hash($algorithm, $fingerprint);
 
         // Create the authorizations
         $authorization = $user->devices()->create([
@@ -58,8 +55,16 @@ class AuthBroker implements BrokerContract
             return $this->respond(static::INVALID_TOKEN);
         }
 
+        // Check that the request has not expired.
+        $requestLifetime = $this->config['lifetimes']['request'];
+        if ($authorization->created_at->lessThan(now()->subSeconds($requestLifetime))) {
+            return $this->response(static::EXPIRED_REQUEST);
+        }
+
         // Verify the fingerprints match.
-        if (!$this->hasher->check($fingerprint, $authorization->fingerprint)) {
+        $algorithm = $this->config['fingerprints']['algorithm'];
+
+        if (hash($algorithm, $fingerprint) !== $authorization->fingerprint) {
             return $this->respond(static::INVALID_FINGERPRINT);
         }
 
@@ -119,5 +124,4 @@ class AuthBroker implements BrokerContract
     {
         return new AuthBrokerResponse($outcome, $payload);
     }
-
 }

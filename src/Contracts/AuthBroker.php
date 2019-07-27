@@ -11,4 +11,6 @@ interface AuthBroker
     const INVALID_TOKEN = 'invalid_token';
 
     const INVALID_FINGERPRINT = 'invalid_fingerprint';
+
+    const EXPIRED_REQUEST = 'expired_request';
 }
