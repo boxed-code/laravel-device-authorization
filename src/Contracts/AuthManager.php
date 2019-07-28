@@ -4,6 +4,8 @@ namespace BoxedCode\Laravel\Auth\Device\Contracts;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 interface AuthManager
 {

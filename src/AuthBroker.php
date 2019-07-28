@@ -238,7 +238,7 @@ class AuthBroker implements BrokerContract
 
         $fingerprintHash = hash($algorithm, $fingerprint);
 
-        if ($authorization = $user->deviceAuthorizations()->veifiedFingerprint($fingerprintHash)->first()) {
+        if ($authorization = $user->deviceAuthorizations()->verifiedFingerprint($fingerprintHash)->first()) {
             return $authorization;
         }
 
