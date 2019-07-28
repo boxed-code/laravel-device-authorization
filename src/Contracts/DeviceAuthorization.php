@@ -8,5 +8,7 @@ interface DeviceAuthorization
 {
     public function user(): BelongsTo;
 
-    public function scopePendingToken($query, $token);
+    public function scopeFingerprint($query, $fingerprint);
+
+    public function scopePending($query, $token = null);
 }

@@ -71,6 +71,11 @@ class DeviceAuthorization extends Model implements Contract
         );
     }
 
+    public function scopeFingerprint($query, $fingerprint)
+    {
+        $query->where('fingerprint', '=', $fingerprint);
+    }
+
     public function scopePending($query, $token = null)
     {
         $query->whereNull('verified_at');
