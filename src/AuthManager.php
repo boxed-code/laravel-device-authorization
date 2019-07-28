@@ -9,6 +9,7 @@ use Illuminate\Contracts\Session\Session;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use UAParser\Parser;
 
 class AuthManager implements ManagerContract
 {
@@ -109,5 +110,27 @@ class AuthManager implements ManagerContract
         return $this->fingerprinter->fingerprint(
             $request
         );
+    }
+
+    public function resolveBrowserNameFromRequest(Request $request)
+    {
+        $parser = Parser::create();
+        
+        $result = $parser->parse($request->server->get('HTTP_USER_AGENT'));
+
+        return $result->ua->family . ' (' . $result->os->family . ')';
+    }
+
+    public function resolveAddressFromRequest(Request $request)
+    {
+        if (!empty($request->server->get('HTTP_CLIENT_IP'))) {
+            return $request->server->get('HTTP_CLIENT_IP');
+        }
+
+        if (!empty($request->server->get('HTTP_X_FORWARDED_FOR'))) {
+            return $request->server->get('HTTP_X_FORWARDED_FOR');
+        }
+
+        return $request->server->get('REMOTE_ADDR');
     }
 }

@@ -20,9 +20,9 @@ trait DeviceAuthorization
 
         $fingerprint = $this->manager()->fingerprint($request);
 
-        $browser = $this->resolveBrowserNameFromRequest($request);
+        $browser = $this->manager()->resolveBrowserFromRequest($request);
 
-        $ip = $this->resolveAddressFromRequest($request);
+        $ip = $this->manager()->resolveAddressFromRequest($request);
 
         $response = $this->broker()->challenge(
             $request->user(), $fingerprint, $browser, $ip
@@ -105,28 +105,6 @@ trait DeviceAuthorization
         }
 
         throw new DeviceAuthorizationLogicException;
-    }
-
-    protected function resolveBrowserNameFromRequest(Request $request)
-    {
-        $parser = Parser::create();
-        
-        $result = $parser->parse($request->server->get('HTTP_USER_AGENT'));
-
-        return $result->ua->family . ' (' . $result->os->family . ')';
-    }
-
-    protected function resolveAddressFromRequest(Request $request)
-    {
-        if (!empty($request->server->get('HTTP_CLIENT_IP'))) {
-            return $request->server->get('HTTP_CLIENT_IP');
-        }
-
-        if (!empty($request->server->get('HTTP_X_FORWARDED_FOR'))) {
-            return $request->server->get('HTTP_X_FORWARDED_FOR');
-        }
-
-        return $request->server->get('REMOTE_ADDR');
     }
 
     public function manager()
