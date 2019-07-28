@@ -2,6 +2,9 @@
 
 namespace BoxedCode\Laravel\Auth\Device\Contracts;
 
+use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
+use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations;
+
 interface AuthBroker
 {
     const USER_CHALLENGED = 'user_challenged';
@@ -13,4 +16,12 @@ interface AuthBroker
     const INVALID_FINGERPRINT = 'invalid_fingerprint';
 
     const EXPIRED_REQUEST = 'expired_request';
+
+    public function challenge(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip);
+
+    public function verify(HasDeviceAuthorizations $user, $fingerprint, $token);
+
+    public function setEventDispatcher(EventDispatcher $events);
+
+    public function getEventDispatcher();
 }
