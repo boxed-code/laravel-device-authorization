@@ -3,6 +3,7 @@
 namespace BoxedCode\Laravel\Auth\Device\Http\Middleware;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager;
+use BoxedCode\Laravel\Auth\Device\Exceptions\DeviceAuthenticationHttpException;
 use Closure;
 
 class RequireDeviceAuthorization
@@ -49,7 +50,7 @@ class RequireDeviceAuthorization
         if ($this->shouldAuthenticate($request, $methods)) {
 
             if ($request->expectsJson()) {
-                throw new AuthenticationException;
+                throw new DeviceAuthenticationHttpException;
             }
 
             return $this->manager->requestAuthorization();
