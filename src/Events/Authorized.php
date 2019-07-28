@@ -4,7 +4,7 @@ namespace BoxedCode\Laravel\Auth\Device\Events;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization;
 
-class Challenged
+class Authorized
 {
     /**
      * Th authorization instance.

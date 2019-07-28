@@ -6,6 +6,17 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 interface HasDeviceAuthorizations
 {
+    /**
+     * Determine whether the user can authorize devices.
+     * 
+     * @return bool
+     */
     public function canAuthorizeDevice(): bool;
-    public function devices(): HasMany;
+
+    /**
+     * The users device authorizations relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function deviceAuthorizations(): HasMany;
 }

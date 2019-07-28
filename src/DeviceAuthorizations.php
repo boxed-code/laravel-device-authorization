@@ -8,17 +8,15 @@ use Illuminate\Http\Request;
 
 trait DeviceAuthorizations 
 {
-    public function devices(): HasMany
+    /**
+     * The users device authorization relationship.
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function deviceAuthorizations(): HasMany
     {
         return $this->hasMany(
             config('device.authorization_model')
         );
-    }
-
-    public function scopePendingToken($query, $token)
-    {
-        $query
-            ->where('token', '=', $token)
-            ->whereNull('verified_at');
     }
 }

@@ -11,10 +11,25 @@ class AuthorizationRequest extends Notification
 {
     use Queueable;
 
-    protected $token;
+    /**
+     * The verify token.
+     * 
+     * @var string
+     */
+    protected $verifyToken;
 
+    /**
+     * The IP address the notification was request from.
+     * 
+     * @var string
+     */
     protected $ip;
 
+    /**
+     * The browser name the notification was requested from.
+     * 
+     * @var string
+     */
     protected $browser;
 
     /**
@@ -22,9 +37,9 @@ class AuthorizationRequest extends Notification
      *
      * @return void
      */
-    public function __construct($token, $ip, $browser)
+    public function __construct($verify_token, $ip, $browser)
     {
-        $this->token = $token;
+        $this->verifyToken = $verifyToken;
 
         $this->ip = $ip;
 
@@ -56,7 +71,7 @@ class AuthorizationRequest extends Notification
             ->line(new HtmlString('<strong>IP Address: ' . $this->ip . '</strong>'))
             ->line(new HtmlString('<strong>Browser: ' . $this->browser . '</strong>'))
             ->line('Note thate you will need to do this on the same device and in the same browser as you were using.')
-            ->action('Verify Device', route('device.verify', [$this->token]))
+            ->action('Verify Device', route('device.verify', [$this->verifyToken]))
             ->line('Thanks for helping us to keep your account secure!');
     }
 
@@ -70,7 +85,7 @@ class AuthorizationRequest extends Notification
     {
         return [
             'message' => 'You requested to authenticate a new device.',
-            'url' => route('device.verify', [$this->token]),
+            'url' => route('device.verify', [$this->verifyToken]),
             'ip' => $this->ip,
             'browser' => $this->browser,
         ];

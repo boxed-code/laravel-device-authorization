@@ -7,13 +7,29 @@ use Illuminate\Http\Request;
 
 class Fingerprinter implements Contract
 {
+    /**
+     * The configuration.
+     * 
+     * @var array
+     */
     protected $config;
 
+    /**
+     * Create a new fingerprinter instance.
+     * 
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         $this->config = $config;
     }
 
+    /**
+     * Fingerprint a request.
+     * 
+     * @param  \Illuminate\Http\Request $request
+     * @return string
+     */
     public function fingerprint(Request $request)
     {
         $data = [];
