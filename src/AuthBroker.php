@@ -25,18 +25,11 @@ class AuthBroker implements BrokerContract
         // Flush all other pending authorizations for this user.
         $user->devices()->pending()->delete();
 
-        $algorithm = $this->config['fingerprints']['algorithm'];
+        if ($response = $this->findExistingAuthorization($user, $fingerprint)) {
+            return $response;
+        }
 
-        $fingerprintHash = hash($algorithm, $fingerprint);
-
-        // Create the authorizations
-        $authorization = $user->devices()->create([
-            'uuid' => Str::uuid(),
-            'fingerprint' => $fingerprintHash,
-            'browser' => $browser,
-            'ip' => $ip,
-            'verify_token' => $token = $this->newVerifyToken(),
-        ]);
+        $authorization = $this->newAuthorization($user, $fingerprint, $browser, $ip);
 
         // Send the request and verification token        
         $user->notify(new $this->config['notification']($token, $browser, $ip));
@@ -51,7 +44,7 @@ class AuthBroker implements BrokerContract
     public function verify(HasDeviceAuthorizations $user, $fingerprint, $token)
     {
         // Verify the token.
-        if (!($authorization = $user->devices()->pending($token)->first())) {
+        if (empty($token) || !($authorization = $user->devices()->pending($token)->first())) {
             return $this->respond(static::INVALID_TOKEN);
         }
 
@@ -74,6 +67,21 @@ class AuthBroker implements BrokerContract
         $this->event(new Events\Verified($authorization));
 
         return $this->respond(static::DEVICE_VERIFIED, [
+            'authorization' => $authorization
+        ]);
+    }
+
+    public function authorize(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip)
+    {
+        if ($response = $this->findExistingAuthorization($user, $fingerprint)) {
+            return $response;
+        }
+
+        $authorization = $this->newAuthorization(
+            $user, $fingerprint, $browser, $ip, $verified_at = now()
+        );
+
+        return $this->respond(static::DEVICE_AUTHORIZED, [
             'authorization' => $authorization
         ]);
     }
@@ -118,6 +126,40 @@ class AuthBroker implements BrokerContract
     protected function newVerifyToken()
     {
         return Str::random(40);
+    }
+
+    protected function newAuthorization(HasDeviceAuthorizations $user, 
+                                        $fingerprint, 
+                                        $browser, 
+                                        $ip, 
+                                        $verified_at = null
+    ) {
+        $algorithm = $this->config['fingerprints']['algorithm'];
+
+        $fingerprintHash = hash($algorithm, $fingerprint);
+
+        // Create the authorizations
+        return $user->devices()->create([
+            'uuid' => Str::uuid(),
+            'fingerprint' => $fingerprintHash,
+            'browser' => $browser,
+            'ip' => $ip,
+            'verify_token' => $token = $this->newVerifyToken(),
+            'verified_at' => $verified_at,
+        ]);
+    }
+
+    protected function findExistingAuthorization(HasDeviceAuthorizations $user, $fingerprint)
+    {
+        $algorithm = $this->config['fingerprints']['algorithm'];
+
+        $fingerprintHash = hash($algorithm, $fingerprint);
+
+        if ($authorization = $user->devices()->fingerprint($fingerprintHash)->first()) {
+            return $this->respond(static::DEVICE_ALREADY_AUTHORIZED, [
+                'authorization' => $authorization
+            ]);
+        }
     }
 
     protected function respond($outcome, array $payload = [])
