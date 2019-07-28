@@ -13,7 +13,7 @@ class AuthBroker implements BrokerContract
 {
     protected $config;
 
-    protected $dispatcher;
+    protected $events;
 
     public function __construct(array $config = [])
     {
