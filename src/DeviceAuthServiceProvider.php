@@ -5,7 +5,7 @@ namespace BoxedCode\Laravel\Auth\Device;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker as BrokerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager as ManagerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter as FingerprinterContract;
-use BoxedCode\Laravel\Auth\Device\Fingerprints\Fingerprinter;
+use BoxedCode\Laravel\Auth\Device\Fingerprinter;
 use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Routing\Router;

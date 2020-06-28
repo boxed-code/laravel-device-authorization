@@ -1,6 +1,6 @@
 <?php
 
-namespace BoxedCode\Laravel\Auth\Device\Fingerprints;
+namespace BoxedCode\Laravel\Auth\Device;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter as Contract;
 use Illuminate\Http\Request;
