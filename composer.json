@@ -21,6 +21,7 @@
         "illuminate/bus": "^7.0|^8.0",
         "illuminate/cookie": "^7.0|^8.0",
         "illuminate/encryption": "^7.0|^8.0",
+        "laravel/ui": "^2.0|^3.0",
         "ua-parser/uap-php": "^3.8"
     },
     "require-dev": {
