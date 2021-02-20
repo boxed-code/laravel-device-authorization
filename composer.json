@@ -11,19 +11,20 @@
     ],
     "prefer-stable": true,
     "require": {
-        "illuminate/contracts": "^6.0|^7.0",
-        "illuminate/http": "^6.0|^7.0",
-        "illuminate/database": "^6.0|^7.0",
-        "illuminate/auth": "^6.0|^7.0",
-        "illuminate/routing": "^6.0|^7.0",
-        "illuminate/notifications": "^6.0|^7.0",
-        "illuminate/bus": "^6.0|^7.0",
-        "illuminate/cookie": "^6.0|^7.0",
-        "illuminate/encryption": "^6.0|^7.0",
+        "php": "^7.2.5|^8.0",
+        "illuminate/contracts": "^6.0",
+        "illuminate/http": "^6.0",
+        "illuminate/database": "^6.0",
+        "illuminate/auth": "^6.0",
+        "illuminate/routing": "^6.0",
+        "illuminate/notifications": "^6.0",
+        "illuminate/bus": "^6.0",
+        "illuminate/cookie": "^6.0",
+        "illuminate/encryption": "^6.0",
         "ua-parser/uap-php": "^3.8"
     },
     "require-dev": {
-        "orchestra/testbench": "^4.0|^5.0",
+        "orchestra/testbench": "^4.0",
         "symfony/thanks": "^1.0"
     },
     "autoload": {

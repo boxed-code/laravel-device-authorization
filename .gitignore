@@ -1,3 +1,5 @@
 vendor
 composer.lock
 .todo
+.idea
+.phpunit.result.cache
