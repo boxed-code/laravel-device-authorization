@@ -5,7 +5,6 @@ namespace BoxedCode\Laravel\Auth\Device\Http\Traits;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager;
 use BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization as Authorization;
-use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations as HasAuthorizations;
 use BoxedCode\Laravel\Auth\Device\Exceptions\DeviceAuthorizationLogicException;
 use Illuminate\Http\Request;
 
@@ -141,14 +140,14 @@ trait DeviceAuthorization
             // The user cannot authorize devices.
             case AuthBroker::USER_CANNOT_AUTHORIZE_DEVICES:
                 return $this->sendErrorResponse(
-                    'The user cannot verify devices.'
+                    'The user cannot verify devices.',
                     $response
                 );
 
             // The user presented an invalid verification token.
             case AuthBroker::INVALID_TOKEN:
                 return $this->sendErrorResponse(
-                    'The token supplied was incorrect.'
+                    'The token supplied was incorrect.',
                     $response
                 );
 
@@ -159,14 +158,14 @@ trait DeviceAuthorization
             // The fingerprint does not match that of the requested authorization.
             case AuthBroker::INVALID_FINGERPRINT:
                 return $this->sendErrorResponse(
-                    'This device or browser does not match that of the authorization request.'
+                    'This device or browser does not match that of the authorization request.',
                     $response
                 );
 
             // The authorization has expired.
             case AuthBroker::EXPIRED_REQUEST:
                 return $this->sendErrorResponse(
-                    'This authorization request has expired.'
+                    'This authorization request has expired.',
                     $response
                 );
 
