@@ -12,8 +12,9 @@ trait DeviceAuthorization
 {
     /**
      * Send a challenge to the user with a verification link.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function challenge(Request $request)
@@ -29,7 +30,10 @@ trait DeviceAuthorization
         $ip = $this->manager()->resolveAddressFromRequest($request);
 
         $response = $this->broker()->challenge(
-            $request->user(), $fingerprint, $browser, $ip
+            $request->user(),
+            $fingerprint,
+            $browser,
+            $ip
         );
 
         return $this->routeResponse($response);
@@ -37,8 +41,9 @@ trait DeviceAuthorization
 
     /**
      * The user has been challenged.
-     * 
-     * @param  BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization $authorization
+     *
+     * @param BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization $authorization
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function challenged(Authorization $authorization)
@@ -48,8 +53,9 @@ trait DeviceAuthorization
 
     /**
      * Show the user challenged view.
-     * 
-     * @param  \Symfony\Component\HttpFoundation\Request $request
+     *
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     *
      * @return \Illuminate\Contracts\View\View
      */
     public function showChallenged(Request $request)
@@ -59,17 +65,20 @@ trait DeviceAuthorization
 
     /**
      * Verify the challenge and authorize the user.
-     * 
-     * @param  \Illuminate\Http\Request $request
-     * @param  string  $token  
-     * @return \Symfony\Component\HttpFoundation\Response          
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param string                   $token
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
     public function verifyAndAuthorize(Request $request, $token)
     {
         $fingerprint = $this->manager()->fingerprint($request);
 
         $response = $this->broker()->verifyAndAuthorize(
-            $request->user(), $fingerprint, $token
+            $request->user(),
+            $fingerprint,
+            $token
         );
 
         return $this->routeResponse($response);
@@ -77,8 +86,9 @@ trait DeviceAuthorization
 
     /**
      * The device has been authorized.
-     * 
-     * @param  BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization $authorization
+     *
+     * @param BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization $authorization
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function authorized(Authorization $authorization)
@@ -88,23 +98,25 @@ trait DeviceAuthorization
 
     /**
      * Send a response redirecting the user to the error view.
-     * 
-     * @param  string $message  
-     * @param  \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse $response
+     *
+     * @param string                                            $message
+     * @param \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse $response
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     protected function sendErrorResponse($message, $response)
     {
         return redirect()->route('device.error')
             ->withErrors([
-                $message
+                $message,
             ]);
     }
 
     /**
      * Show the error view.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return \Illuminate\Contracts\View\View
      */
     public function showError(Request $request)
@@ -114,27 +126,29 @@ trait DeviceAuthorization
 
     /**
      * Route a broker response.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse $response
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse $response
+     *
+     * @throws \BoxedCode\Laravel\Auth\Device\Exceptions\DeviceAuthorizationLogicException
+     *
      * @return \Symfony\Component\HttpFoundation\Response
-     * @throws  \BoxedCode\Laravel\Auth\Device\Exceptions\DeviceAuthorizationLogicException
      */
     protected function routeResponse($response)
     {
-        switch ($response)
-        {
+        switch ($response) {
             // The user has been sent a challenge with a verification link.
             case AuthBroker::USER_CHALLENGED:
-                return $this->challenged($response->authorization) ?? 
+                return $this->challenged($response->authorization) ??
                     redirect()->route('device.challenged');
 
             // The device has been authorized.
             case AuthBroker::DEVICE_AUTHORIZED:
-                $httpResponse = $this->authorized($response->authorization) ?? 
+                $httpResponse = $this->authorized($response->authorization) ??
                         redirect()->to('/');
 
                 return $this->manager()->setDeviceTokenCookie(
-                    $httpResponse, $response->authorization->uuid
+                    $httpResponse,
+                    $response->authorization->uuid
                 );
 
             // The user cannot authorize devices.
@@ -171,12 +185,12 @@ trait DeviceAuthorization
 
         }
 
-        throw new DeviceAuthorizationLogicException;
+        throw new DeviceAuthorizationLogicException();
     }
 
     /**
      * Get the manager instance.
-     * 
+     *
      * @return \BoxedCode\Laravel\Auth\Device\Contracts\AuthManager
      */
     public function manager()
@@ -186,7 +200,7 @@ trait DeviceAuthorization
 
     /**
      * Get the broker instance.
-     * 
+     *
      * @return \BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker
      */
     public function broker()

@@ -14,21 +14,21 @@ class AuthManager implements ManagerContract
 {
     /**
      * The configuration.
-     * 
+     *
      * @var array
      */
     protected $config;
 
     /**
      * The fingerprinter instance.
-     * 
+     *
      * @var \BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter
      */
     protected $fingerprinter;
 
     /**
      * The session instance.
-     * 
+     *
      * @var \Illuminate\Contracts\Session\Session
      */
     protected $session;
@@ -36,13 +36,14 @@ class AuthManager implements ManagerContract
     /**
      * Create a new manager instance.
      *
-     * @param \Illuminate\Contracts\Session\Session  $session
-     * @param \BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter  $fingerprinter
-     * @param array  $config 
+     * @param \Illuminate\Contracts\Session\Session                  $session
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter $fingerprinter
+     * @param array                                                  $config
      */
-    public function __construct(Session $session,
-                                Fingerprinter $fingerprinter, 
-                                array $config = []
+    public function __construct(
+        Session $session,
+        Fingerprinter $fingerprinter,
+        array $config = []
     ) {
         $this->session = $session;
 
@@ -53,9 +54,10 @@ class AuthManager implements ManagerContract
 
     /**
      * Determine whether a request should be authorized or denied.
-     * 
-     * @param  \Illuminate\Http\Request $request
-     * @return boolean
+     *
+     * @param \Illuminate\Http\Request $request
+     *
+     * @return bool
      */
     public function isAuthorized(Request $request)
     {
@@ -78,7 +80,7 @@ class AuthManager implements ManagerContract
 
     /**
      * Request device authorization and redirect.
-     * 
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function requestAuthorization()
@@ -86,11 +88,11 @@ class AuthManager implements ManagerContract
         $this->session->put('_lda_na', true);
 
         return redirect()->route('device.challenge');
-    }   
+    }
 
     /**
      * Determine whether a device authorization is progress.
-     * 
+     *
      * @return bool
      */
     public function requiresAuthorization()
@@ -100,7 +102,7 @@ class AuthManager implements ManagerContract
 
     /**
      * Revoke a device authorization request.
-     * 
+     *
      * @return void
      */
     public function revokeAuthorizationRequest()
@@ -111,12 +113,13 @@ class AuthManager implements ManagerContract
     /**
      * Set the device token cookie.
      *
-     * The cookie is used to store the authorizations UUID which is checked 
-     * against the database, a long with the fingerprint to ensure the 
+     * The cookie is used to store the authorizations UUID which is checked
+     * against the database, a long with the fingerprint to ensure the
      * device is authorized.
-     * 
+     *
      * @param \Symfony\Component\HttpFoundation\Response $response
-     * @param string $token
+     * @param string                                     $token
+     *
      * @return \Symfony\Component\HttpFoundation\Response
      */
     public function setDeviceTokenCookie(Response $response, $token)
@@ -124,8 +127,8 @@ class AuthManager implements ManagerContract
         $lifetime = $this->config['lifetimes']['authorization'] ?: 2628000;
 
         $response->headers->setCookie(
-            (new CookieJar)->make(
-                '_la_dat', 
+            (new CookieJar())->make(
+                '_la_dat',
                 $token,//$enrypted,
                 $lifetime
             )
@@ -136,8 +139,9 @@ class AuthManager implements ManagerContract
 
     /**
      * Gets the device token cookie.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     public function getDeviceTokenCookie(Request $request)
@@ -150,16 +154,16 @@ class AuthManager implements ManagerContract
     /**
      * Set the client fingerprint.
      *
-     * A client fingerprint can be set to increase entropy of the fingerprint. 
-     * This can be used with a client side fingerprinting library, such as 
-     * fingerprint.js, which will enable a more unique fingerprint than relying 
+     * A client fingerprint can be set to increase entropy of the fingerprint.
+     * This can be used with a client side fingerprinting library, such as
+     * fingerprint.js, which will enable a more unique fingerprint than relying
      * on server-side variables only.
      *
-     * You can automatically populate this value by sending a '_fingerprint' field a 
+     * You can automatically populate this value by sending a '_fingerprint' field a
      * long with the usual form fields.
-     * 
+     *
      * @param \Illuminate\Http\Request $request
-     * @param string $fingerprint
+     * @param string                   $fingerprint
      */
     public function setClientFingerprint(Request $request, $fingerprint)
     {
@@ -168,8 +172,9 @@ class AuthManager implements ManagerContract
 
     /**
      * Forget the client fingerprint.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return void
      */
     public function forgetClientFingerprint(Request $request)
@@ -179,8 +184,9 @@ class AuthManager implements ManagerContract
 
     /**
      * Create a fingerprint for a request instance.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     public function fingerprint(Request $request)
@@ -192,23 +198,25 @@ class AuthManager implements ManagerContract
 
     /**
      * Resolve a browser name from a request.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     public function resolveBrowserNameFromRequest(Request $request)
     {
         $parser = Parser::create();
-        
+
         $result = $parser->parse($request->server->get('HTTP_USER_AGENT'));
 
-        return $result->ua->family . ' (' . $result->os->family . ')';
+        return $result->ua->family.' ('.$result->os->family.')';
     }
 
     /**
      * Resolve an IP address from a request.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     public function resolveAddressFromRequest(Request $request)

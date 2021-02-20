@@ -3,13 +3,12 @@
 namespace BoxedCode\Laravel\Auth\Device;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Http\Request;
 
-trait DeviceAuthorizations 
+trait DeviceAuthorizations
 {
     /**
      * The users device authorization relationship.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function deviceAuthorizations(): HasMany

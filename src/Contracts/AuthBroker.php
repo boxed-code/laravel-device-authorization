@@ -3,7 +3,6 @@
 namespace BoxedCode\Laravel\Auth\Device\Contracts;
 
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
-use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations;
 
 interface AuthBroker
 {
@@ -44,47 +43,50 @@ interface AuthBroker
 
     /**
      * Challenge the user to verify themselves before authorizing the device.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint
-     * @param  string $browser    
-     * @param  string $ip         
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $browser
+     * @param string                                                           $ip
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function challenge(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip);
 
     /**
-     * Verify the presented token is valid, the fingerprint matches it 
+     * Verify the presented token is valid, the fingerprint matches it
      * and authorize the fingerprint.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint
-     * @param  string $token 
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $token
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function verifyAndAuthorize(HasDeviceAuthorizations $user, $fingerprint, $token);
 
     /**
      * Authorize the given fingerprint.
-     * 
-     * @param  HasDeviceAuthorizations $user        
-     * @param  string $fingerprint 
-     * @param  string $browser     
-     * @param  string $ip          
-     * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse                        
+     *
+     * @param HasDeviceAuthorizations $user
+     * @param string                  $fingerprint
+     * @param string                  $browser
+     * @param string                  $ip
+     *
+     * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function authorize(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip);
 
     /**
      * Set the event dispatcher.
-     * 
+     *
      * @param \Illuminate\Contracts\Events\Dispatcher $events
      */
     public function setEventDispatcher(EventDispatcher $events);
 
     /**
      * Get the event dispatcher.
-     * 
+     *
      * @return \Illuminate\Contracts\Events\Dispatcher
      */
     public function getEventDispatcher();

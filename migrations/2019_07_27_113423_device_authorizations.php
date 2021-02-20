@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\Schema;
 
 class DeviceAuthorizations extends Migration
 {
@@ -13,7 +12,7 @@ class DeviceAuthorizations extends Migration
      */
     public function up()
     {
-        Schema::create('device_authorizations', function($table) {
+        Schema::create('device_authorizations', function ($table) {
             $table->string('uuid')->primary();
             $table->text('fingerprint');
             $table->string('browser');

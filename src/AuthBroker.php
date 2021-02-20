@@ -2,7 +2,6 @@
 
 namespace BoxedCode\Laravel\Auth\Device;
 
-use BoxedCode\Laravel\Auth\Device\AuthBrokerResponse;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker as BrokerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations;
 use Illuminate\Contracts\Events\Dispatcher as EventDispatcher;
@@ -13,21 +12,21 @@ class AuthBroker implements BrokerContract
 {
     /**
      * The configuration array.
-     * 
+     *
      * @var array
      */
     protected $config;
 
     /**
      * The event dispatcher instance.
-     * 
+     *
      * @var \Illuminate\Contracts\Events\Dispatcher
      */
     protected $events;
 
     /**
      * Create a new broker instance.
-     * 
+     *
      * @param array $config
      */
     public function __construct(array $config = [])
@@ -37,11 +36,12 @@ class AuthBroker implements BrokerContract
 
     /**
      * Send a challenge to the user with a verification link.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint 
-     * @param  string $browser     
-     * @param  string $ip          
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $browser
+     * @param string                                                           $ip
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function challenge(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip)
@@ -57,29 +57,30 @@ class AuthBroker implements BrokerContract
         // Check that the device is not already authorized.
         if ($authorization = $this->findExistingVerifiedAuthorization($user, $fingerprint)) {
             return $this->respond(static::DEVICE_ALREADY_AUTHORIZED, [
-                'authorization' => $authorization
+                'authorization' => $authorization,
             ]);
         }
 
         // Create a new authorization.
         $authorization = $this->newAuthorization($user, $fingerprint, $browser, $ip);
 
-        // Send the request and verification token        
+        // Send the request and verification token
         $user->notify(new $this->config['notification']($authorization->verify_token, $browser, $ip));
 
         $this->event(new Events\Challenged($authorization));
 
         return $this->respond(static::USER_CHALLENGED, [
-            'authorization' => $authorization
+            'authorization' => $authorization,
         ]);
-    }   
+    }
 
     /**
      * Verify the challenge and authorize the user.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint
-     * @param  string $token      
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $token
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function verifyAndAuthorize(HasDeviceAuthorizations $user, $fingerprint, $token)
@@ -110,17 +111,18 @@ class AuthBroker implements BrokerContract
         $this->event(new Events\Authorized($authorization));
 
         return $this->respond(static::DEVICE_AUTHORIZED, [
-            'authorization' => $authorization
+            'authorization' => $authorization,
         ]);
     }
 
     /**
      * Authorize a device without verification.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint 
-     * @param  string $browser     
-     * @param  string $ip          
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $browser
+     * @param string                                                           $ip
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     public function authorize(HasDeviceAuthorizations $user, $fingerprint, $browser, $ip)
@@ -133,23 +135,27 @@ class AuthBroker implements BrokerContract
         // Check the device is not already verified.
         if ($authorization = $this->findExistingVerifiedAuthorization($user, $fingerprint)) {
             return $this->respond(static::DEVICE_ALREADY_AUTHORIZED, [
-                'authorization' => $authorization
+                'authorization' => $authorization,
             ]);
         }
 
         // Create a new verified authorization.
         $authorization = $this->newAuthorization(
-            $user, $fingerprint, $browser, $ip, $verified_at = now()
+            $user,
+            $fingerprint,
+            $browser,
+            $ip,
+            $verified_at = now()
         );
 
         return $this->respond(static::DEVICE_AUTHORIZED, [
-            'authorization' => $authorization
+            'authorization' => $authorization,
         ]);
     }
 
     /**
      * Set the event dispatcher.
-     * 
+     *
      * @param EventDispatcher $events
      */
     public function setEventDispatcher(EventDispatcher $events)
@@ -161,7 +167,7 @@ class AuthBroker implements BrokerContract
 
     /**
      * Get the event dispatcher.
-     * 
+     *
      * @return \Illuminate\Contracts\Events\Dispatcher
      */
     public function getEventDispatcher()
@@ -178,7 +184,7 @@ class AuthBroker implements BrokerContract
     {
         if ($this->events) {
             call_user_func_array(
-                [$this->events, 'dispatch'], 
+                [$this->events, 'dispatch'],
                 func_get_args()
             );
         }
@@ -186,7 +192,7 @@ class AuthBroker implements BrokerContract
 
     /**
      * Generate a new verification token.
-     * 
+     *
      * @return string
      */
     protected function newVerifyToken()
@@ -196,19 +202,21 @@ class AuthBroker implements BrokerContract
 
     /**
      * Create a new authorization record.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint 
-     * @param  string $browser     
-     * @param  string $ip          
-     * @param  DateTime|null $verified_at
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     * @param string                                                           $browser
+     * @param string                                                           $ip
+     * @param DateTime|null                                                    $verified_at
+     *
      * @return \BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization
      */
-    protected function newAuthorization(HasDeviceAuthorizations $user, 
-                                        $fingerprint, 
-                                        $browser, 
-                                        $ip, 
-                                        $verified_at = null
+    protected function newAuthorization(
+        HasDeviceAuthorizations $user,
+        $fingerprint,
+        $browser,
+        $ip,
+        $verified_at = null
     ) {
         $algorithm = $this->config['fingerprints']['algorithm'];
 
@@ -216,20 +224,21 @@ class AuthBroker implements BrokerContract
 
         // Create the authorizations
         return $user->deviceAuthorizations()->create([
-            'uuid' => Str::uuid(),
-            'fingerprint' => $fingerprintHash,
-            'browser' => $browser,
-            'ip' => $ip,
+            'uuid'         => Str::uuid(),
+            'fingerprint'  => $fingerprintHash,
+            'browser'      => $browser,
+            'ip'           => $ip,
             'verify_token' => $token = $this->newVerifyToken(),
-            'verified_at' => $verified_at,
+            'verified_at'  => $verified_at,
         ]);
     }
 
     /**
      * Find an existing verified verification by fingerprint.
-     * 
-     * @param  \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
-     * @param  string $fingerprint
+     *
+     * @param \BoxedCode\Laravel\Auth\Device\Contracts\HasDeviceAuthorizations $user
+     * @param string                                                           $fingerprint
+     *
      * @return \BoxedCode\Laravel\Auth\Device\Contracts\DeviceAuthorization
      */
     protected function findExistingVerifiedAuthorization(HasDeviceAuthorizations $user, $fingerprint)
@@ -247,9 +256,10 @@ class AuthBroker implements BrokerContract
 
     /**
      * Create a new broker response instance.
-     * 
-     * @param  string $outcome
-     * @param  array  $payload
+     *
+     * @param string $outcome
+     * @param array  $payload
+     *
      * @return \BoxedCode\Laravel\Auth\Device\AuthBrokerResponse
      */
     protected function respond($outcome, array $payload = [])

@@ -5,8 +5,6 @@ namespace BoxedCode\Laravel\Auth\Device;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthBroker as BrokerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager as ManagerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter as FingerprinterContract;
-use BoxedCode\Laravel\Auth\Device\Fingerprinter;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Routing\Router;
 use Illuminate\Support\ServiceProvider;
@@ -21,7 +19,7 @@ class DeviceAuthServiceProvider extends ServiceProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            $this->packagePath('config/device.php'), 
+            $this->packagePath('config/device.php'),
             'device'
         );
 
@@ -34,12 +32,12 @@ class DeviceAuthServiceProvider extends ServiceProvider
 
     /**
      * Register the fingerprint manager.
-     * 
+     *
      * @return void
      */
     public function registerFingerPrinter()
     {
-        $this->app->bind(FingerprinterContract::class, function() {
+        $this->app->bind(FingerprinterContract::class, function () {
             $config = config('device.fingerprints', []);
 
             return new Fingerprinter($config);
@@ -48,12 +46,12 @@ class DeviceAuthServiceProvider extends ServiceProvider
 
     /**
      * Register the authentication broker instance.
-     * 
+     *
      * @return void
      */
     protected function registerAuthBroker()
     {
-        $this->app->bind(BrokerContract::class, function($app) {
+        $this->app->bind(BrokerContract::class, function ($app) {
             $config = config('device', []);
 
             return (new AuthBroker($config))
@@ -65,12 +63,12 @@ class DeviceAuthServiceProvider extends ServiceProvider
 
     /**
      * Register the authentication manager.
-     * 
+     *
      * @return void
      */
     protected function registerAuthManager()
     {
-        $this->app->singleton(ManagerContract::class, function($app) {
+        $this->app->singleton(ManagerContract::class, function ($app) {
             $config = config('device', []);
 
             return new AuthManager(
@@ -98,7 +96,7 @@ class DeviceAuthServiceProvider extends ServiceProvider
 
         // Register the package configuration to publish.
         $this->publishes(
-            [$this->packagePath('config/device.php') => config_path('device.php')], 
+            [$this->packagePath('config/device.php') => config_path('device.php')],
             'config'
         );
 
@@ -107,30 +105,30 @@ class DeviceAuthServiceProvider extends ServiceProvider
 
         // Register the event listeners.
         $this->app['events']->listen(
-            \Illuminate\Auth\Events\Logout::class, 
+            \Illuminate\Auth\Events\Logout::class,
             \BoxedCode\Laravel\Auth\Device\Listeners\LogoutListener::class
         );
 
         $this->app['events']->listen(
-            \Illuminate\Auth\Events\Login::class, 
+            \Illuminate\Auth\Events\Login::class,
             \BoxedCode\Laravel\Auth\Device\Listeners\LoginListener::class
         );
     }
 
     /**
      * Register the router macro.
-     * 
+     *
      * @return void
      */
     protected function registerRouteMacro()
     {
-        $registerRoutes = function() { 
+        $registerRoutes = function () {
             $this->loadRoutesFrom(
                 $this->packagePath('src/Http/routes.php')
-            ); 
+            );
         };
 
-        Router::macro('deviceAuth', function() use ($registerRoutes) {
+        Router::macro('deviceAuth', function () use ($registerRoutes) {
             $registerRoutes();
         });
 
@@ -144,6 +142,7 @@ class DeviceAuthServiceProvider extends ServiceProvider
      * Loads a path relative to the package base directory.
      *
      * @param string $path
+     *
      * @return string
      */
     protected function packagePath($path = '')

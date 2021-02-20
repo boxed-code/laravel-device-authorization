@@ -49,15 +49,15 @@ class EnforcingMiddlewareTestCase extends TestCase
 
         // Verify the notification was sent.
         \Notification::assertSentTo($this->testUser, AuthorizationRequest::class, function ($mail) use ($latestAuthorization) {
-            return ($mail->verifyToken === $latestAuthorization->verify_token &&
+            return $mail->verifyToken === $latestAuthorization->verify_token &&
                 $mail->browser === $latestAuthorization->browser &&
-                $mail->ip === $latestAuthorization->ip);
+                $mail->ip === $latestAuthorization->ip;
         });
 
         // 'Click' the link in the notification e-mail.
         $response = $this->actingAs($this->testUser)
             ->withoutMiddleware([\Illuminate\Cookie\Middleware\EncryptCookies::class])
-            ->get('/auth/device/verify/' . $latestAuthorization->verify_token);
+            ->get('/auth/device/verify/'.$latestAuthorization->verify_token);
         $response->assertRedirect('/');
 
         $authCookie = collect($response->headers->getCookies())
