@@ -95,8 +95,8 @@ class DeviceAuthorization extends Model implements Contract
     {
         $query->whereNull('verified_at');
 
-        if ($token) {
-            $query->where('verify_token', '=', $token);
+        if ($verify_token) {
+            $query->where('verify_token', '=', $verify_token);
         }
     }
 

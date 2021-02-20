@@ -7,6 +7,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 interface HasDeviceAuthorizations
 {
     /**
+     * Send the given notification.
+     *
+     * @param  mixed  $instance
+     * @return void
+     */
+    public function notify($instance);
+
+    /**
      * Determine whether the user can authorize devices.
      * 
      * @return bool

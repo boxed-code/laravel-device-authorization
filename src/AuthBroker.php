@@ -65,7 +65,7 @@ class AuthBroker implements BrokerContract
         $authorization = $this->newAuthorization($user, $fingerprint, $browser, $ip);
 
         // Send the request and verification token        
-        $user->notify(new $this->config['notification']($token, $browser, $ip));
+        $user->notify(new $this->config['notification']($authorization->verify_token, $browser, $ip));
 
         $this->event(new Events\Challenged($authorization));
 

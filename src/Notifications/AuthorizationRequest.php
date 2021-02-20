@@ -16,28 +16,28 @@ class AuthorizationRequest extends Notification
      * 
      * @var string
      */
-    protected $verifyToken;
+    public $verifyToken;
 
     /**
      * The IP address the notification was request from.
      * 
      * @var string
      */
-    protected $ip;
+    public $ip;
 
     /**
      * The browser name the notification was requested from.
      * 
      * @var string
      */
-    protected $browser;
+    public $browser;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct($verify_token, $ip, $browser)
+    public function __construct($verifyToken, $browser, $ip)
     {
         $this->verifyToken = $verifyToken;
 

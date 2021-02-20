@@ -24,7 +24,7 @@ trait DeviceAuthorization
 
         $fingerprint = $this->manager()->fingerprint($request);
 
-        $browser = $this->manager()->resolveBrowserFromRequest($request);
+        $browser = $this->manager()->resolveBrowserNameFromRequest($request);
 
         $ip = $this->manager()->resolveAddressFromRequest($request);
 

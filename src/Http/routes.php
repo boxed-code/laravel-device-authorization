@@ -8,5 +8,5 @@ Route::middleware($authMiddleware)->group(function () {
     Route::get('/auth/device/error', $authController.'@showError')->name('device.error');
     Route::get('/auth/device/challenge', $authController.'@challenge')->name('device.challenge')->middleware('throttle:10,1');
     Route::get('/auth/device/challenged', $authController.'@showChallenged')->name('device.challenged');
-    Route::get('/auth/device/verify/{token}', $authController.'@verify')->name('device.verify')->middleware('throttle:10,1');
+    Route::get('/auth/device/verify/{token}', $authController.'@verifyAndAuthorize')->name('device.verify')->middleware('throttle:10,1');
 });
