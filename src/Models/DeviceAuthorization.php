@@ -60,7 +60,7 @@ class DeviceAuthorization extends Model implements Contract
 
     /**
      * Get the user the model belongs to.
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user(): BelongsTo
@@ -73,9 +73,10 @@ class DeviceAuthorization extends Model implements Contract
 
     /**
      * Filter a model query by a fingerprint which has been verified.
-     * 
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  string $fingerprint
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param string                             $fingerprint
+     *
      * @return void
      */
     public function scopeVerifiedFingerprint($query, $fingerprint)
@@ -86,9 +87,10 @@ class DeviceAuthorization extends Model implements Contract
 
     /**
      * Filter a model query for non-verified items and optionally for a given token.
-     * 
-     * @param  \Illuminate\Database\Query\Builder $query
-     * @param  string $verify_token
+     *
+     * @param \Illuminate\Database\Query\Builder $query
+     * @param string                             $verify_token
+     *
      * @return void
      */
     public function scopePending($query, $verify_token = null)
@@ -102,8 +104,9 @@ class DeviceAuthorization extends Model implements Contract
 
     /**
      * Get the model associate with an authentication guard.
-     * 
-     * @param  string|null $guard
+     *
+     * @param string|null $guard
+     *
      * @return string
      */
     protected function getModelForGuard($guard = null)
@@ -114,7 +117,7 @@ class DeviceAuthorization extends Model implements Contract
 
         return collect(config('auth.guards'))
             ->map(function ($guard) {
-                if (! isset($guard['provider'])) {
+                if (!isset($guard['provider'])) {
                     return;
                 }
 

@@ -10,14 +10,14 @@ class RequireDeviceAuthorization
 {
     /**
      * The session manager instance.
-     * 
+     *
      * @var \BoxedCode\Laravel\Auth\Device\Contracts\AuthManager
      */
     protected $manager;
 
     /**
      * Create a new middleware instance.
-     * 
+     *
      * @param AuthManager $manager
      */
     public function __construct(AuthManager $manager)
@@ -26,7 +26,7 @@ class RequireDeviceAuthorization
     }
 
     /**
-     * The paths that should be excluded from 
+     * The paths that should be excluded from
      * two factor authentication.
      *
      * @var array
@@ -40,17 +40,17 @@ class RequireDeviceAuthorization
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
-     * @param  string|null  $guard
+     * @param \Illuminate\Http\Request $request
+     * @param \Closure                 $next
+     * @param string|null              $guard
+     *
      * @return mixed
      */
     public function handle($request, Closure $next, $methods = null)
     {
         if ($this->shouldAuthenticate($request, $methods)) {
-
             if ($request->expectsJson()) {
-                throw new DeviceAuthorizationHttpException;
+                throw new DeviceAuthorizationHttpException();
             }
 
             return $this->manager->requestAuthorization();
@@ -61,8 +61,9 @@ class RequireDeviceAuthorization
 
     /**
      * Ascertain whether we should redirect for authentication.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function shouldAuthenticate($request, $methods)
@@ -74,7 +75,8 @@ class RequireDeviceAuthorization
     /**
      * Determine if the request has a URI that should pass through CSRF verification.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
+     *
      * @return bool
      */
     protected function inExceptArray($request)

@@ -21,7 +21,7 @@ abstract class TestCase extends \Orchestra\Testbench\TestCase
     protected function getPackageProviders($app)
     {
         return [
-            \BoxedCode\Laravel\Auth\Device\DeviceAuthServiceProvider::class
+            \BoxedCode\Laravel\Auth\Device\DeviceAuthServiceProvider::class,
         ];
     }
 

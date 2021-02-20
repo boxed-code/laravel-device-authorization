@@ -9,14 +9,14 @@ class Fingerprinter implements Contract
 {
     /**
      * The configuration.
-     * 
+     *
      * @var array
      */
     protected $config;
 
     /**
      * Create a new fingerprinter instance.
-     * 
+     *
      * @param array $config
      */
     public function __construct(array $config = [])
@@ -26,15 +26,16 @@ class Fingerprinter implements Contract
 
     /**
      * Fingerprint a request.
-     * 
-     * @param  \Illuminate\Http\Request $request
+     *
+     * @param \Illuminate\Http\Request $request
+     *
      * @return string
      */
     public function fingerprint(Request $request)
     {
         $data = [];
 
-        // Loop through the request data a pluck out the keys 
+        // Loop through the request data a pluck out the keys
         // we desire for building the fingerprint.
         foreach ($this->config['keys'] as $name => $section) {
             foreach ($section as $attr) {
