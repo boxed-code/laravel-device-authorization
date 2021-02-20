@@ -43,7 +43,7 @@ class EnforcingMiddlewareTestCase extends TestCase
 
         // Visit the 'challenged' page which instructs the user to check their mail.
         $response = $this->actingAs($this->testUser)->get('/auth/device/challenged');
-        $response->assertSee('We haven\'t seen you using this device before');
+        $response->assertSee('new device or browser');
 
         $latestAuthorization = $this->testUser->deviceAuthorizations()->latest()->first();
 
