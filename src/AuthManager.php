@@ -4,7 +4,6 @@ namespace BoxedCode\Laravel\Auth\Device;
 
 use BoxedCode\Laravel\Auth\Device\Contracts\AuthManager as ManagerContract;
 use BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter;
-use Illuminate\Contracts\Encryption\Encrypter;
 use Illuminate\Contracts\Session\Session;
 use Illuminate\Cookie\CookieJar;
 use Illuminate\Http\Request;
@@ -35,27 +34,16 @@ class AuthManager implements ManagerContract
     protected $session;
 
     /**
-     * The encrypter instance.
-     * 
-     * @var \Illuminate\Contracts\Encryption\Encrypter
-     */
-    protected $encrypter;
-
-    /**
      * Create a new manager instance.
-     * 
-     * @param \Illuminate\Contracts\Encryption\Encrypter  $encrypter
+     *
      * @param \Illuminate\Contracts\Session\Session  $session
      * @param \BoxedCode\Laravel\Auth\Device\Contracts\Fingerprinter  $fingerprinter
      * @param array  $config 
      */
-    public function __construct(Encrypter $encrypter, 
-                                Session $session, 
+    public function __construct(Session $session,
                                 Fingerprinter $fingerprinter, 
                                 array $config = []
     ) {
-        $this->encrypter = $encrypter;
-
         $this->session = $session;
 
         $this->fingerprinter = $fingerprinter;
@@ -133,14 +121,12 @@ class AuthManager implements ManagerContract
      */
     public function setDeviceTokenCookie(Response $response, $token)
     {
-        $enrypted = $this->encrypter->encrypt($token);
-
         $lifetime = $this->config['lifetimes']['authorization'] ?: 2628000;
 
         $response->headers->setCookie(
             (new CookieJar)->make(
                 '_la_dat', 
-                $enrypted, 
+                $token,//$enrypted,
                 $lifetime
             )
         );
@@ -157,7 +143,7 @@ class AuthManager implements ManagerContract
     public function getDeviceTokenCookie(Request $request)
     {
         if ($token = $request->cookies->get('_la_dat')) {
-            return $this->encrypter->decrypt($token);
+            return $token;
         }
     }
 
