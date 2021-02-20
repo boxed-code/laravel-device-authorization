@@ -84,4 +84,34 @@ return [
 
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Automatic Route Binding
+    |--------------------------------------------------------------------------
+    |
+    | By default, the package automatically binds the required routes to a
+    | default HTTP controller. You can switch off automatic registration or
+    | change the controller name using the options below.
+    */
+
+    'routing' => [
+
+        /**
+         * Automatically register the default routes to the controller specified below?
+         * (Routes can also be bound be calling Route::challenge()).
+         */
+        'register' => true,
+
+        /**
+         * Add the following middleware to the automatically registered routes above.
+         */
+        'middleware' => ['web', 'auth'],
+
+        /**
+         * Where should we direct the default authentication routes?
+         */
+        'controller' => \BoxedCode\Laravel\Auth\Device\Http\AuthController::class,
+
+    ],
+
 ];

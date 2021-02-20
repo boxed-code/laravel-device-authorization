@@ -104,10 +104,7 @@ class DeviceAuthServiceProvider extends ServiceProvider
         );
 
         // Register the migrations to publish.
-        $this->publishes(
-            [$this->packagePath('migrations') => database_path('migrations')], 
-            'migrations'
-        );
+        $this->loadMigrationsFrom($this->packagePath('migrations'));
 
         // Register the event listeners.
         $this->app['events']->listen(
@@ -137,6 +134,11 @@ class DeviceAuthServiceProvider extends ServiceProvider
         Router::macro('deviceAuth', function() use ($registerRoutes) {
             $registerRoutes();
         });
+
+        // Register the routes automatically if required.
+        if ($this->app['config']->get('device.routing.register') === true) {
+            $registerRoutes();
+        }
     }
 
     /**
