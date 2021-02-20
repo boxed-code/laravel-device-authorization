@@ -24,7 +24,7 @@
         "ua-parser/uap-php": "^3.8"
     },
     "require-dev": {
-        "orchestra/testbench": "^4.0",
+        "orchestra/testbench": "^4.15",
         "symfony/thanks": "^1.0"
     },
     "autoload": {
