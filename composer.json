@@ -9,10 +9,17 @@
             "email": "green2go@gmail.com"
         }
     ],
-    "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "laravel/framework": "^6.0|^7.0",
+        "illuminate/contracts": "^6.0|^7.0",
+        "illuminate/http": "^6.0|^7.0",
+        "illuminate/database": "^6.0|^7.0",
+        "illuminate/auth": "^6.0|^7.0",
+        "illuminate/routing": "^6.0|^7.0",
+        "illuminate/notifications": "^6.0|^7.0",
+        "illuminate/bus": "^6.0|^7.0",
+        "illuminate/cookie": "^6.0|^7.0",
+        "illuminate/encryption": "^6.0|^7.0",
         "ua-parser/uap-php": "^3.8"
     },
     "require-dev": {
