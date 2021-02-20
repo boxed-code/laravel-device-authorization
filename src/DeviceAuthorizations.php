@@ -2,7 +2,6 @@
 
 namespace BoxedCode\Laravel\Auth\Device;
 
-use BoxedCode\Laravel\Auth\Device\DeviceAuthorizations;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
