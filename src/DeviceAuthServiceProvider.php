@@ -74,7 +74,6 @@ class DeviceAuthServiceProvider extends ServiceProvider
             $config = config('device', []);
 
             return new AuthManager(
-                $app->make(Encrypter::class),
                 $app->make(Session::class),
                 $app->make(FingerprinterContract::class),
                 $config
